@@ -18,42 +18,36 @@ namespace TicTacToe
 
             Console.WriteLine("Enter first player name: ");
             string player1Name = Console.ReadLine();
-            _player1 = new Player(player1Name, GameTile.O);
+            _player1 = new Player(player1Name, GameTile.X);
 
             Console.WriteLine("Enter second player name: ");
             string player2Name = Console.ReadLine();
-            _player2 = new Player(player2Name, GameTile.X);
+            _player2 = new Player(player2Name, GameTile.O);
         }
 
         public void Start()
         {
             _board.Init();
             _board.PrintBoard();
+            Player currentPlayer = _player1;
             do
             {
-                Console.WriteLine($"It's {_player1.Name}'s turn. Please enter a row numer:");
-                var row1 = int.Parse(Console.ReadLine());
-
-                Console.WriteLine("Please enter a column numer:");
-                var col1 = int.Parse(Console.ReadLine());
-
-                ValidatePlayerTurn(row1, col1, _player1.PlayerTile);
-                _board.PrintBoard();
-
-                if (IsWin() || IsTie())
-                    break;
-
-                Console.WriteLine($"It's {_player2.Name}'s turn. Please enter a row numer:");
-                var row2 = int.Parse(Console.ReadLine());
-
-                Console.WriteLine("Please enter a column numer:");
-                var col2 = int.Parse(Console.ReadLine());
-
-                ValidatePlayerTurn(row2, col2, _player2.PlayerTile);
-                _board.PrintBoard();
-
+                PlayTurn(currentPlayer);
+                currentPlayer = currentPlayer == _player1 ? _player2 : _player1;
             }
             while (!IsWin() && !IsTie());
+        }
+
+        private void PlayTurn(Player player)
+        {
+            Console.WriteLine($"It's {player.Name}'s turn. Please enter a row numer:");
+            var row = int.Parse(Console.ReadLine());
+
+            Console.WriteLine("Please enter a column numer:");
+            var col = int.Parse(Console.ReadLine());
+
+            ValidatePlayerTurn(row, col, player.PlayerTile);
+            _board.PrintBoard();
         }
 
         private bool IsTie()
