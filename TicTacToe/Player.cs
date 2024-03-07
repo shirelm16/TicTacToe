@@ -8,35 +8,17 @@ namespace TicTacToe
 {
     public class Player
     {
-        public int GamesWon { get; private set; }
-        public int GamesLost { get; private set; }
-        public int GamesPlayed { get; private set; }
+        public int Score { get; private set; } = 0;
+        public char PlayerTile { get; private set; }
 
-        public string Name { get; private set; }
-
-        public GameTile PlayerTile { get; private set; }
-
-        public Player(string name, GameTile tile)
+        public Player(char tile)
         {
-            Name = name;
             PlayerTile = tile;
         }
 
-        public void Win()
+        public void UpdateScore()
         {
-            GamesPlayed++;
-            GamesWon++;
-        }
-
-        public void Lose()
-        {
-            GamesPlayed++;
-            GamesLost++;
-        }
-
-        public void Tie()
-        {
-            GamesPlayed++;
+            Score++;
         }
     }
 }

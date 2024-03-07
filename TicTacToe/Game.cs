@@ -6,95 +6,76 @@ using System.Threading.Tasks;
 
 namespace TicTacToe
 {
+    public class GameState
+    {
+        public BoardState BoardState { get; set; }
+        public Player CurrentPlayer { get; set; }
+    }
+
     public class Game
     {
         private Board _board;
-        private Player _player1;
-        private Player _player2;
+        private Player _playerX;
+        private Player _playerO;
+        private GameState _state;
 
         public Game()
         {
             _board = new Board();
-
-            Console.WriteLine("Enter first player name: ");
-            string player1Name = Console.ReadLine();
-            _player1 = new Player(player1Name, GameTile.X);
-
-            Console.WriteLine("Enter second player name: ");
-            string player2Name = Console.ReadLine();
-            _player2 = new Player(player2Name, GameTile.O);
+            _playerX = new Player('X');
+            _playerO = new Player('O');
         }
 
-        public void Start()
+        public void Init()
         {
             _board.Init();
-            _board.PrintBoard();
-            Player currentPlayer = _player1;
-            do
+            _state = new GameState
             {
-                PlayTurn(currentPlayer);
-                currentPlayer = currentPlayer == _player1 ? _player2 : _player1;
-            }
-            while (!IsWin() && !IsTie());
+                BoardState = BoardState.None,
+                CurrentPlayer = _playerX,
+            };
         }
 
-        private void PlayTurn(Player player)
+        public bool Play(int row, int col)
         {
-            Console.WriteLine($"It's {player.Name}'s turn. Please enter a row numer:");
-            var row = int.Parse(Console.ReadLine());
-
-            Console.WriteLine("Please enter a column numer:");
-            var col = int.Parse(Console.ReadLine());
-
-            ValidatePlayerTurn(row, col, player.PlayerTile);
-            _board.PrintBoard();
-        }
-
-        private bool IsTie()
-        {
-            if (_board.IsFull())
+            if (_board.SetCell(row, col, _state.CurrentPlayer.PlayerTile))
             {
-                Console.WriteLine("It's a tie!");
-                _player1.Tie();
-                _player2.Tie();
+                _board.UpdateBoardState();
+                _state.BoardState = _board.GetBoardState();
+                if (IsWin())
+                {
+                    _state.CurrentPlayer.UpdateScore();                
+                }
                 return true;
             }
             return false;
-
         }
 
-        private void ValidatePlayerTurn(int row, int col, GameTile playerTile)
+        public void ChangePlayer()
         {
-            while (!_board.SetCell(row, col, playerTile))
-            {
-                Console.WriteLine("Invalid input! Row and column must be between 0 and 2 and cell must be empty!");
-                Console.WriteLine("Please enter a row numer:");
-                row = int.Parse(Console.ReadLine());
-
-                Console.WriteLine("Please enter a column numer:");
-                col = int.Parse(Console.ReadLine());
-            }
+            _state.CurrentPlayer = _state.CurrentPlayer == _playerX ? _playerO : _playerX;
         }
 
-        private bool IsWin()
+        public GameState GetGameState()
         {
-            if (_board.IsWin(_player1.PlayerTile))
-            {
-                Console.WriteLine($"{_player1.Name} wins!");
-                _player1.Win();
-                _player2.Lose();
-                return true;
-            }
+            return _state;
+        }
 
-            if (_board.IsWin(_player2.PlayerTile))
-            {
-                Console.WriteLine($"{_player2.Name} wins!");
-                _player2.Win();
-                _player1.Lose();
-                return true;
-            }
+        public bool IsWin()
+        {
+            return _state.BoardState == BoardState.Row0Win ||
+            _state.BoardState == BoardState.Row1Win ||
+            _state.BoardState == BoardState.Row2Win ||
+            _state.BoardState == BoardState.Col0Win ||
+            _state.BoardState == BoardState.Col1Win ||
+            _state.BoardState == BoardState.Col2Win ||
+            _state.BoardState == BoardState.Diag1Win ||
+            _state.BoardState == BoardState.Diag2Win;
+        }
 
-            return false;
+        public bool IsTie()
+        {
+            return _state.BoardState == BoardState.Tie;
         }
     }
 }

@@ -6,19 +6,29 @@ using System.Threading.Tasks;
 
 namespace TicTacToe
 {
-    public enum GameTile
+    public enum BoardState
     {
-        X, O, Empty
+        None, 
+        Row0Win, 
+        Row1Win, 
+        Row2Win, 
+        Col0Win, 
+        Col1Win, 
+        Col2Win, 
+        Diag1Win, 
+        Diag2Win, 
+        Tie
     }
 
     public class Board
     {
-        private GameTile[,] _board;
+        private Cell[,] _board;
+        private BoardState _state;
         private int _emptyCells;
 
         public Board()
         {
-            _board = new GameTile[3, 3];
+            _board = new Cell[3, 3];
         }
 
         public void Init()
@@ -27,26 +37,69 @@ namespace TicTacToe
             {
                 for (int j = 0; j < _board.GetLength(1); j++)
                 {
-                    _board[i, j] = GameTile.Empty;
+                    _board[i, j] = new Cell();
                 }
             }
-            _emptyCells = 9;
+            _state = BoardState.None;
+            _emptyCells = _board.GetLength(0) * _board.GetLength(1);
         }
 
-        public bool SetCell(int row, int col, GameTile value)
+        public bool SetCell(int row, int col, char value)
         {
-            if (!IsValidCell(row, col))
-                return false;
-
-            _board[row, col] = value;
-            _emptyCells--;
-            return true;
+            if (IsValidCell(row, col))
+            {
+                _board[row, col].SetValue(value);
+                _emptyCells--;
+                return true;
+            }
+            return false;
         }
 
-        public bool IsWin(GameTile tile)
+        public void UpdateBoardState()
         {
-            return IsRowWin(tile) || IsColumnWin(tile) || IsDiagonalWin(tile);
+            //check for row win
+            if (!_board[0, 0].IsEmpty() && _board[0, 0].Value == _board[0, 1].Value &&
+                _board[0, 1].Value == _board[0, 2].Value)
+                _state = BoardState.Row0Win;
+
+            else if (!_board[1, 0].IsEmpty() && _board[1, 0].Value == _board[1, 1].Value &&
+                _board[1, 1].Value == _board[1, 2].Value)
+                _state = BoardState.Row1Win;
+
+            else if (!_board[2, 0].IsEmpty() && _board[2, 0].Value == _board[2, 1].Value &&
+                _board[2, 1].Value == _board[2, 2].Value)
+                _state = BoardState.Row2Win;
+
+            //check for column win
+            else if (!_board[0, 0].IsEmpty() && _board[0, 0].Value == _board[1, 0].Value &&
+                _board[1, 0].Value == _board[2, 0].Value)
+                _state = BoardState.Col0Win;
+
+            else if (!_board[0, 1].IsEmpty() && _board[0, 1].Value == _board[1, 1].Value &&
+                _board[1, 1].Value == _board[2, 1].Value)
+                _state = BoardState.Col1Win;
+
+            else if (!_board[0, 2].IsEmpty() && _board[0, 2].Value == _board[1, 2].Value &&
+                _board[1, 2].Value == _board[2, 2].Value)
+                _state = BoardState.Col2Win;
+
+            //check for diagonal win
+            else if (!_board[0, 0].IsEmpty() && _board[0, 0].Value == _board[1, 1].Value &&
+                _board[1, 1].Value == _board[2, 2].Value)
+                _state = BoardState.Diag1Win;
+
+            else if (!_board[0, 2].IsEmpty() && _board[0, 2].Value == _board[1, 1].Value &&
+                _board[1, 1].Value == _board[2, 0].Value)
+                _state = BoardState.Diag2Win;
+
+            else if (IsFull())
+                _state = BoardState.Tie;
+
+            else
+                _state = BoardState.None;
         }
+
+        public BoardState GetBoardState() { return _state; }
 
         public bool IsFull()
         {
@@ -59,15 +112,15 @@ namespace TicTacToe
             {
                 for (int j = 0; j < _board.GetLength(1); j++)
                 {
-                    switch (_board[i, j])
+                    switch (_board[i, j].Value)
                     {
-                        case GameTile.Empty:
+                        case ' ':
                             Console.Write("- ");
                             break;
-                        case GameTile.O:
+                        case 'O':
                             Console.Write("O ");
                             break;
-                        case GameTile.X:
+                        case 'X':
                             Console.Write("X ");
                             break;
                     }
@@ -76,37 +129,11 @@ namespace TicTacToe
             }
         }
 
-        private bool IsRowWin(GameTile tile)
-        {
-            for(int i=0; i<_board.GetLength(0);i++)
-            {
-                if (_board[i, 0] == tile && _board[i, 1] == tile && _board[i, 2] == tile)
-                    return true;
-            }
-            return false;
-        }
-
-        private bool IsColumnWin(GameTile tile)
-        {
-            for (int j = 0; j < _board.GetLength(1); j++)
-            {
-                if (_board[0, j] == tile && _board[1, j] == tile && _board[2, j] == tile)
-                    return true;
-            }
-            return false;
-        }
-
-        private bool IsDiagonalWin(GameTile tile)
-        {
-            return (_board[0, 0] == tile && _board[1, 1] == tile && _board[2, 2] == tile) ||
-                (_board[0, 2] == tile && _board[1, 1] == tile && _board[2, 0] == tile);
-        }
-
         private bool IsValidCell(int row, int col)
         {
             return row >= 0 && row < _board.GetLength(0)
                 && col >= 0 && col < _board.GetLength(1)
-                && _board[row, col] == GameTile.Empty;
+                && _board[row, col].IsEmpty();
         }
     }
 }
