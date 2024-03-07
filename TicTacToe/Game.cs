@@ -40,8 +40,8 @@ namespace TicTacToe
         {
             if (_board.SetCell(row, col, _state.CurrentPlayer.PlayerTile))
             {
-                _board.UpdateBoardState();
                 _state.BoardState = _board.GetBoardState();
+
                 if (IsWin())
                 {
                     _state.CurrentPlayer.UpdateScore();                

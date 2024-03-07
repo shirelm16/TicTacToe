@@ -23,7 +23,6 @@ namespace TicTacToe
     public class Board
     {
         private Cell[,] _board;
-        private BoardState _state;
         private int _emptyCells;
 
         public Board()
@@ -40,7 +39,6 @@ namespace TicTacToe
                     _board[i, j] = new Cell();
                 }
             }
-            _state = BoardState.None;
             _emptyCells = _board.GetLength(0) * _board.GetLength(1);
         }
 
@@ -55,51 +53,48 @@ namespace TicTacToe
             return false;
         }
 
-        public void UpdateBoardState()
+        public BoardState GetBoardState()
         {
             //check for row win
             if (!_board[0, 0].IsEmpty() && _board[0, 0].Value == _board[0, 1].Value &&
                 _board[0, 1].Value == _board[0, 2].Value)
-                _state = BoardState.Row0Win;
+                return BoardState.Row0Win;
 
-            else if (!_board[1, 0].IsEmpty() && _board[1, 0].Value == _board[1, 1].Value &&
+            if (!_board[1, 0].IsEmpty() && _board[1, 0].Value == _board[1, 1].Value &&
                 _board[1, 1].Value == _board[1, 2].Value)
-                _state = BoardState.Row1Win;
+                return BoardState.Row1Win;
 
-            else if (!_board[2, 0].IsEmpty() && _board[2, 0].Value == _board[2, 1].Value &&
+            if (!_board[2, 0].IsEmpty() && _board[2, 0].Value == _board[2, 1].Value &&
                 _board[2, 1].Value == _board[2, 2].Value)
-                _state = BoardState.Row2Win;
+                return BoardState.Row2Win;
 
             //check for column win
-            else if (!_board[0, 0].IsEmpty() && _board[0, 0].Value == _board[1, 0].Value &&
+            if (!_board[0, 0].IsEmpty() && _board[0, 0].Value == _board[1, 0].Value &&
                 _board[1, 0].Value == _board[2, 0].Value)
-                _state = BoardState.Col0Win;
+                return BoardState.Col0Win;
 
-            else if (!_board[0, 1].IsEmpty() && _board[0, 1].Value == _board[1, 1].Value &&
+            if (!_board[0, 1].IsEmpty() && _board[0, 1].Value == _board[1, 1].Value &&
                 _board[1, 1].Value == _board[2, 1].Value)
-                _state = BoardState.Col1Win;
+                return BoardState.Col1Win;
 
-            else if (!_board[0, 2].IsEmpty() && _board[0, 2].Value == _board[1, 2].Value &&
+            if (!_board[0, 2].IsEmpty() && _board[0, 2].Value == _board[1, 2].Value &&
                 _board[1, 2].Value == _board[2, 2].Value)
-                _state = BoardState.Col2Win;
+                return BoardState.Col2Win;
 
             //check for diagonal win
-            else if (!_board[0, 0].IsEmpty() && _board[0, 0].Value == _board[1, 1].Value &&
+            if (!_board[0, 0].IsEmpty() && _board[0, 0].Value == _board[1, 1].Value &&
                 _board[1, 1].Value == _board[2, 2].Value)
-                _state = BoardState.Diag1Win;
+                return BoardState.Diag1Win;
 
-            else if (!_board[0, 2].IsEmpty() && _board[0, 2].Value == _board[1, 1].Value &&
+            if (!_board[0, 2].IsEmpty() && _board[0, 2].Value == _board[1, 1].Value &&
                 _board[1, 1].Value == _board[2, 0].Value)
-                _state = BoardState.Diag2Win;
+                return BoardState.Diag2Win;
 
-            else if (IsFull())
-                _state = BoardState.Tie;
+            if (IsFull())
+                return BoardState.Tie;
 
-            else
-                _state = BoardState.None;
+            return BoardState.None;
         }
-
-        public BoardState GetBoardState() { return _state; }
 
         public bool IsFull()
         {
