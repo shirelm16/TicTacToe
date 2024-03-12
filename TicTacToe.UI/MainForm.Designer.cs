@@ -57,13 +57,13 @@
             // 
             // onePlayerButton
             // 
-            onePlayerButton.Enabled = false;
             onePlayerButton.Location = new Point(173, 130);
             onePlayerButton.Name = "onePlayerButton";
             onePlayerButton.Size = new Size(122, 29);
             onePlayerButton.TabIndex = 1;
             onePlayerButton.Text = "1 Player";
             onePlayerButton.UseVisualStyleBackColor = true;
+            onePlayerButton.Click += onePlayerButton_Click;
             // 
             // exitButton
             // 

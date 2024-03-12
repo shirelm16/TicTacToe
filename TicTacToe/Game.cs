@@ -31,7 +31,7 @@ namespace TicTacToe
             _board.Init();
             _state = new GameState
             {
-                BoardState = BoardState.None,
+                BoardState = BoardState.InComplete,
                 CurrentPlayer = _playerX,
             };
         }
@@ -40,15 +40,21 @@ namespace TicTacToe
         {
             if (_board.SetCell(row, col, _state.CurrentPlayer.PlayerTile))
             {
-                _state.BoardState = _board.GetBoardState();
+                _state.BoardState = _board.GetBoardStatus().State;
 
                 if (IsWin())
                 {
-                    _state.CurrentPlayer.UpdateScore();                
+                    _state.CurrentPlayer.UpdateScore();
                 }
                 return true;
             }
             return false;
+        }
+
+        public (int row, int col) GetBestMove()
+        {
+            var bestMove = MiniMax.BestMove(_board, 0, true);
+            return (bestMove.Row.Value, bestMove.Column.Value);
         }
 
         public void ChangePlayer()

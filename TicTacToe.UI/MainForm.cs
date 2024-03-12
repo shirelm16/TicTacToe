@@ -15,7 +15,14 @@ namespace TicTacToe.UI
         private void twoPlayersButton_Click(object sender, EventArgs e)
         {
             Hide();
-            var gameForm = new GameForm();
+            var gameForm = new GameForm(GameMode.TwoPlayers);
+            gameForm.Show();
+        }
+
+        private void onePlayerButton_Click(object sender, EventArgs e)
+        {
+            Hide();
+            var gameForm = new GameForm(GameMode.OnePlayer);
             gameForm.Show();
         }
     }
